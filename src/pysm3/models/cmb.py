@@ -276,7 +276,8 @@ class CMBLensed(CMBMap):
         self.cmb_seed = cmb_seed
         self.apply_delens = apply_delens
         self.delensing_ells = (
-            None if delensing_ells is None else self.read_txt(delensing_ells)
+            None if delensing_ells is None else self.read_txt(delensing_ells, 
+                                                              unpack=True)
         )
 
         # Remove monopole and dipole, if present
@@ -284,13 +285,6 @@ class CMBLensed(CMBMap):
             self.cmb_spectra = self.cmb_spectra[:, 2:]
         if self.apply_delens and self.delensing_ells[0][0] == 0:
             self.delensing_ells = self.delensing_ells[:, 2:]
-        # Ensure multipoles are the same length if delensing
-        if self.apply_delens:
-            ell_delens  = self.delensing_ells[0]
-            ell_spectra = self.cmb_spectra[0]
-            if not np.array_equal(ell_delens, ell_spectra):
-                # Multipoles do not match
-                raise ValueError(f"Multipoles do not match for cmb_spectra and delensing ells.")
 
         self.map = u.Quantity(self.run_taylens(), unit=u.uK_CMB, copy=False)
 
